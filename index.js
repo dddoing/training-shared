@@ -6,7 +6,10 @@ export async function matchFederatedPage(remotes, path) {
         remotes.map((remote) =>
             window[remote]
                 .get("./pages-map")
-                .then((factory) => ({ remote, config: factory().default }))
+                .then((factory) => {
+                    console.log(({remote, config: factory().default}))
+                    return ({remote, config: factory().default})
+                })
                 .catch(() => null)
         )
     );
@@ -31,6 +34,7 @@ export async function matchFederatedPage(remotes, path) {
 }
 
 export function createFederatedCatchAll(remotes) {
+    console.log(remotes)
     const FederatedCatchAll = (initialProps) => {
         const [lazyProps, setProps] = React.useState({});
 
@@ -38,11 +42,15 @@ export function createFederatedCatchAll(remotes) {
             ...lazyProps,
             ...initialProps,
         };
-
+        console.log("FederatedPage : ",FederatedPage);
+        console.log("Render404 : ",render404)
+        console.log("RenderError : ", renderError)
+        console.log("needsReload : ", needsReload)
         React.useEffect(async () => {
             if (needsReload) {
                 const federatedProps = await FederatedCatchAll.getInitialProps(props);
                 setProps(federatedProps);
+                console.log(lazyProps);
             }
         }, []);
 
